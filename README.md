@@ -68,6 +68,14 @@ rises. No robotic samples, no audio files.
   Nightmare mode demands them.
 - **Articles are flexible**: `tableau` and `le tableau` both count, and the
   correct article is always displayed so you absorb genders.
+- **Full sentences open the doors**: every room has two phases. First the
+  words; then the voice dictates **complete sentences from the book's
+  exercises** (*"Mon stylo est dans mon sac"*, *"Elle donne une tartine à
+  Robert"*, *"Je me lave dans la salle de bains"*) and you must type them in
+  French. Sentences get nearly double time, are worth 25 points, and after
+  two failed tries the text is revealed so you can read it, type it, and
+  learn it. Missing apostrophes (`jai` for *j'ai*) are tolerated and
+  corrected, like accents — except in Nightmare mode.
 - Missed words **come back later in the same room** until you get them, and
   appear in the end-of-game review list.
 - Even the manor's whispers (*« Derrière toi… »*, *« Ne te retourne pas… »*)

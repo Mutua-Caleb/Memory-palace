@@ -423,6 +423,7 @@ body.dawn #scene {
   transition: opacity 0.4s;
 }
 #subtitle-top.show { opacity: 1; }
+#subtitle-top .fr-line.long { font-size: 20px; }
 #subtitle-top .fr-line {
   font-size: 28px;
   color: var(--bone);

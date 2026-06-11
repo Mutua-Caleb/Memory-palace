@@ -19,13 +19,15 @@ function shuffle(arr) {
 function clean(s) {
   return s.toLowerCase()
     .replace(/[’‘]/g, "'")
+    .replace(/-/g, " ")
     .replace(/[?!.,;:«»"()]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 // fully fold accents away
 function fold(s) {
-  return clean(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/œ/g, "oe");
+  return clean(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/œ/g, "oe").replace(/'/g, "");
 }
 const FR_ARTICLES = /^(le |la |les |l'|un |une |des )/;
 const EN_ARTICLES = /^(the |a |an |to )/;
@@ -250,6 +252,8 @@ const G = {
   missedSet: new Set(),
   timerId: null,
   deadline: 0,
+  phase: "words",   // "words" → "sentences" within each room
+  attempts: 0,      // wrong tries on the current item
   awaiting: false   // true while waiting for an answer
 };
 
@@ -288,13 +292,18 @@ $("forget-btn").addEventListener("click", () => {
   $("forget-btn").textContent = "Mémoire effacée — les sous-titres réapparaîtront ✓";
 });
 
+function displaySubtitle(w) {
+  const s = $("subtitle-top");
+  const long = w.fr.length > 24;
+  s.innerHTML = `<div class="fr-line${long ? " long" : ""}">« ${w.fr} »</div><div class="en-line">${w.en[0]}</div>`;
+  s.classList.add("show");
+}
+
 function showSubtitle(w) {
   if (settings.subs === "off") return;
   if (settings.subs === "first" && seenWords.has(w.fr)) return;
   markSeen(w.fr);
-  const s = $("subtitle-top");
-  s.innerHTML = `<div class="fr-line">« ${w.fr} »</div><div class="en-line">${w.en[0]}</div>`;
-  s.classList.add("show");
+  displaySubtitle(w);
 }
 
 function speakWord(slow = false) {
@@ -307,7 +316,8 @@ function speakWord(slow = false) {
 
 function startTimer() {
   stopTimer();
-  const total = DIFF[settings.diff].time * 1000;
+  const mult = G.phase === "sentences" ? 1.9 : 1;
+  const total = DIFF[settings.diff].time * 1000 * mult;
   G.deadline = performance.now() + total;
   const ring = $("timer-ring");
   G.timerId = setInterval(() => {
@@ -322,9 +332,26 @@ function stopTimer() {
 }
 
 function nextWord() {
-  if (!G.queue.length) { roomCleared(); return; }
+  if (!G.queue.length) {
+    // words done → the door demands full sentences from the book (dictation)
+    const pool = SENTENCES[ROOMS[G.roomIdx].id];
+    if (G.phase === "words" && pool && pool.length) {
+      G.phase = "sentences";
+      G.queue = shuffle(pool);
+      $("answer").placeholder = "Écris la phrase complète en français…";
+      $("feedback").innerHTML =
+        `<span class="good">✒️ La porte exige des phrases complètes, en français. — ` +
+        `The door demands full sentences, in French.</span>`;
+      Voice.speak("Et maintenant… des phrases complètes.", { volume: 0.85 });
+      setTimeout(nextWord, 2600);
+      return;
+    }
+    roomCleared();
+    return;
+  }
   G.word = G.queue.shift();
   G.awaiting = true;
+  G.attempts = 0;
   $("subtitle-top").classList.remove("show");
   $("answer").value = "";
   $("hint-line").textContent = "";
@@ -366,6 +393,16 @@ function checkAnswer(raw) {
   const frs = frForms(w.fr);
   const frExact = frs.some(f => ansClean === f);
   const frFolded = frs.some(f => ansFold === fold(f));
+
+  // sentence dictation: French only, whatever the answer-language setting
+  if (G.phase === "sentences") {
+    if (frExact || (frFolded && !accents)) {
+      return { ok: true, lang: "fr", accentPerfect: frExact };
+    }
+    if (accents && frFolded && !frExact) return { ok: false, nearAccent: true };
+    return { ok: false };
+  }
+
   const ens = enForms(w.en);
   const enHit = ens.some(f => ansFold === fold(f));
 
@@ -392,7 +429,7 @@ function onSubmit() {
   if (res.ok) {
     stopTimer();
     G.awaiting = false;
-    const points = res.lang === "fr" ? 10 : 5;
+    const points = G.phase === "sentences" ? 25 : (res.lang === "fr" ? 10 : 5);
     G.streak++;
     const bonus = Math.min(G.streak, 5);
     G.score += points + bonus;
@@ -412,6 +449,7 @@ function onSubmit() {
   } else {
     markMissed(w);
     G.streak = 0;
+    G.attempts++;
     setDanger(G.danger + 0.22);
     bloodSplat();
     HorrorAudio.chime(false);
@@ -422,6 +460,11 @@ function onSubmit() {
     let msg = `<span class="bad">✗ ${jeer.fr} — il se rapproche…</span>`;
     if (res.nearAccent) {
       msg = `<span class="bad">✗ Les accents, exactement : <b>${w.fr}</b></span>`;
+    }
+    // after two failed tries, reveal the text — read it, type it, learn it
+    if (G.attempts >= 2) {
+      displaySubtitle(w);
+      msg += `<span class="accent-note">Lis-la, écris-la, apprends-la. — Read it, type it, learn it.</span>`;
     }
     $("feedback").innerHTML = msg;
     renderHUD();
@@ -465,6 +508,8 @@ function enterRoom() {
   const room = ROOMS[G.roomIdx];
   $("room-title").textContent = room.fr;
   $("room-sub").innerHTML = `${room.desc}<br><em>${room.descEn}</em>`;
+  G.phase = "words";
+  $("answer").placeholder = "Tape ce que tu entends…";
   G.queue = shuffle(room.words);
   renderHUD();
   const line = rand(VOICE_LINES.enterRoom);
@@ -495,6 +540,7 @@ $("inter-btn").addEventListener("click", () => {
 function caught() {
   stopTimer();
   G.awaiting = false;
+  if (G.word) G.queue.push(G.word); // the item you failed will return
   G.word = null;
   // JUMPSCARE
   HorrorAudio.jumpscare();
@@ -568,7 +614,7 @@ function resetGame() {
   Object.assign(G, {
     running: true, roomIdx: 0, queue: [], word: null, hearts: 3,
     danger: 0, score: 0, streak: 0, missed: [], missedSet: new Set(),
-    awaiting: false
+    phase: "words", attempts: 0, awaiting: false
   });
   document.body.classList.remove("dawn");
   setDanger(0);

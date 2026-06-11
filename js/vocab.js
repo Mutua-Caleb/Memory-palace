@@ -210,6 +210,73 @@ const ROOMS = [
   }
 ];
 
+// Full sentences from the book's exercises — phase 2 of every room.
+// These are dictation: the voice speaks the sentence, you type it in French.
+// hint = the English meaning (shown by the hint button).
+const SENTENCES = {
+  gate: [
+    { fr: "Bonjour, je m'appelle Nicolas.", en: ["hello, my name is nicolas"], hint: "Hello, my name is Nicolas." },
+    { fr: "Comment t'appelles-tu ?", en: ["what is your name"], hint: "What is your name?" },
+    { fr: "Ça va bien, merci.", en: ["i am fine, thank you"], hint: "I am fine, thank you." },
+    { fr: "Au revoir, à bientôt.", en: ["goodbye, see you soon"], hint: "Goodbye, see you soon." }
+  ],
+  classroom: [
+    { fr: "Je suis dans la classe.", en: ["i am in the classroom"], hint: "I am in the classroom." },
+    { fr: "Où est ma règle ?", en: ["where is my ruler"], hint: "Where is my ruler?" },
+    { fr: "Mon stylo est dans mon sac.", en: ["my pen is in my bag"], hint: "My pen is in my bag." },
+    { fr: "Dans ma salle de classe, il y a un stylo.", en: ["in my classroom there is a pen"], hint: "In my classroom, there is a pen." },
+    { fr: "Le prof est fou !", en: ["the teacher is mad"], hint: "The teacher is mad!" }
+  ],
+  corridor: [
+    { fr: "La poubelle est derrière la porte.", en: ["the bin is behind the door"], hint: "The bin is behind the door." },
+    { fr: "Le chat est sous la table.", en: ["the cat is under the table"], hint: "The cat is under the table." },
+    { fr: "Où est la sortie ?", en: ["where is the exit"], hint: "Where is the exit?" },
+    { fr: "Il est devant la fenêtre.", en: ["he is in front of the window"], hint: "He is in front of the window." }
+  ],
+  kitchen: [
+    { fr: "Elle donne une tartine à Robert.", en: ["she gives a slice of bread to robert"], hint: "She gives a slice of bread to Robert. (straight from the book)" },
+    { fr: "Le couteau est sur la table.", en: ["the knife is on the table"], hint: "The knife is on the table." },
+    { fr: "Maman met la table pour le petit-déjeuner.", en: ["mum sets the table for breakfast"], hint: "Mum sets the table for breakfast." },
+    { fr: "Il y a du beurre et de la confiture.", en: ["there is butter and jam"], hint: "There is butter and jam." }
+  ],
+  bedroom: [
+    { fr: "Je me lave dans la salle de bains.", en: ["i wash in the bathroom"], hint: "I wash (myself) in the bathroom." },
+    { fr: "Elle se lève à sept heures.", en: ["she gets up at seven"], hint: "She gets up at seven o'clock." },
+    { fr: "Je me réveille et je me lève.", en: ["i wake up and i get up"], hint: "I wake up and I get up." },
+    { fr: "Tu t'habilles dans ta chambre.", en: ["you get dressed in your bedroom"], hint: "You get dressed in your bedroom." }
+  ],
+  clock: [
+    { fr: "Je vais à l'école lundi.", en: ["i go to school on monday"], hint: "I go to school on Monday. (straight from the book)" },
+    { fr: "J'aime les lundis.", en: ["i like mondays"], hint: "I like Mondays." },
+    { fr: "Il est trois heures.", en: ["it is three o'clock"], hint: "It is three o'clock." },
+    { fr: "Il fait ses devoirs à cinq heures.", en: ["he does his homework at five"], hint: "He does his homework at five o'clock." }
+  ],
+  gallery: [
+    { fr: "J'ai un frère et une sœur.", en: ["i have a brother and a sister"], hint: "I have a brother and a sister." },
+    { fr: "Ma mère s'appelle Marie.", en: ["my mother is called marie"], hint: "My mother is called Marie." },
+    { fr: "J'ai onze ans.", en: ["i am eleven years old"], hint: "I am eleven years old." },
+    { fr: "Mon cousin a dix ans.", en: ["my cousin is ten years old"], hint: "My cousin is ten years old." }
+  ],
+  menagerie: [
+    { fr: "J'ai un chien et deux chats.", en: ["i have a dog and two cats"], hint: "I have a dog and two cats." },
+    { fr: "La souris est sous le placard.", en: ["the mouse is under the cupboard"], hint: "The mouse is under the cupboard." },
+    { fr: "Tu aimes les animaux ?", en: ["do you like animals"], hint: "Do you like animals?" },
+    { fr: "Mon chien s'appelle Max.", en: ["my dog is called max"], hint: "My dog is called Max." }
+  ],
+  cellar: [
+    { fr: "Il pleut et il fait froid.", en: ["it is raining and it is cold"], hint: "It is raining and it is cold." },
+    { fr: "Il neige en hiver.", en: ["it snows in winter"], hint: "It snows in winter." },
+    { fr: "Il fait chaud en été.", en: ["it is hot in summer"], hint: "It is hot in summer." },
+    { fr: "Au printemps, il pleut souvent.", en: ["in spring it often rains"], hint: "In spring, it often rains." }
+  ],
+  door: [
+    { fr: "J'ai mal à la tête.", en: ["my head hurts"], hint: "My head hurts. (at the doctor's, in the book)" },
+    { fr: "J'ai deux yeux et une bouche.", en: ["i have two eyes and a mouth"], hint: "I have two eyes and a mouth." },
+    { fr: "Il est derrière toi !", en: ["it is behind you"], hint: "It is behind you!" },
+    { fr: "La porte s'ouvre enfin.", en: ["the door finally opens"], hint: "The door finally opens." }
+  ]
+};
+
 // Whispers The Manor speaks at random — each one is real French you absorb.
 const WHISPERS = [
   { fr: "Je te vois…", en: "I see you…" },
