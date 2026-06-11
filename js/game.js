@@ -49,7 +49,7 @@ function enForms(enList) {
 /* ------------------------------------------------------------------ */
 /*  settings (start screen)                                            */
 /* ------------------------------------------------------------------ */
-const settings = { lang: "fr", diff: "normal", subs: "on" };
+const settings = { lang: "fr", diff: "normal", subs: "first" };
 const DIFF = {
   easy:      { time: 35, accentsRequired: false },
   normal:    { time: 22, accentsRequired: false },
@@ -274,8 +274,24 @@ function renderHUD() {
 /* ------------------------------------------------------------------ */
 /*  word round                                                         */
 /* ------------------------------------------------------------------ */
+// Words whose subtitle has already been shown once — persisted so the
+// crutch disappears for good and recall does the work from then on.
+const seenWords = new Set(JSON.parse(localStorage.getItem("manoir-seen") || "[]"));
+function markSeen(fr) {
+  if (seenWords.has(fr)) return;
+  seenWords.add(fr);
+  localStorage.setItem("manoir-seen", JSON.stringify([...seenWords]));
+}
+$("forget-btn").addEventListener("click", () => {
+  seenWords.clear();
+  localStorage.removeItem("manoir-seen");
+  $("forget-btn").textContent = "Mémoire effacée — les sous-titres réapparaîtront ✓";
+});
+
 function showSubtitle(w) {
-  if (settings.subs !== "on") return;
+  if (settings.subs === "off") return;
+  if (settings.subs === "first" && seenWords.has(w.fr)) return;
+  markSeen(w.fr);
   const s = $("subtitle-top");
   s.innerHTML = `<div class="fr-line">« ${w.fr} »</div><div class="en-line">${w.en[0]}</div>`;
   s.classList.add("show");

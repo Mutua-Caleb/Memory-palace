@@ -55,10 +55,12 @@ rises. No robotic samples, no audio files.
 
 ## 🧠 Why it teaches well
 
-- **Subtitles on top**: by default the spoken French and its English meaning
-  are shown at the top of the screen, so you read, hear, and type at the same
-  time — three memory channels at once. Turn them off ("Cachés — hardcore")
-  for pure listening practice later.
+- **Subtitles, first time only**: the first time you ever meet a word, its
+  French spelling and English meaning appear above the candle — read, hear,
+  and type at once. Every encounter after that (even across sessions) is
+  subtitle-free, so recall does the work instead of reading. Switch to
+  *Toujours* to always see them, *Jamais* for pure listening, or click
+  *« Oublier les mots déjà vus »* to reset your seen-word memory.
 - **Typing in French is rewarded** (10 pts + streak bonus) but English is
   accepted (5 pts), so you can ramp up gradually.
 - **Accent feedback**: outside Nightmare mode, `fenetre` is accepted for
