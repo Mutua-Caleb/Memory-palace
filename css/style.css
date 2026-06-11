@@ -586,6 +586,80 @@ body.dawn #scene {
 #door3d.open .door-caption { opacity: 0; }
 #door3d.walk .hall { transform: scale(10) translateY(7%); opacity: 0; }
 
+/* ============ voxel (Minecraft-style) version ============ */
+#gl { position: fixed; inset: 0; z-index: 1; display: block; }
+body.flash #gl { filter: brightness(3) contrast(1.15); }
+body.is3d.danger-high #gl { filter: saturate(0.65) brightness(0.85); }
+
+#crosshair {
+  position: fixed;
+  left: 50%; top: 50%;
+  width: 6px; height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: rgba(216, 207, 192, 0.85);
+  box-shadow: 0 0 6px #000;
+  z-index: 18;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+body.locked #crosshair { opacity: 0.85; }
+
+#click-hint {
+  position: fixed;
+  bottom: 11vh;
+  left: 0; right: 0;
+  text-align: center;
+  z-index: 19;
+  color: #9a8f80;
+  font-style: italic;
+  font-size: 15px;
+  text-shadow: 0 0 10px #000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+body.playing:not(.locked):not(.ui-open) #click-hint { opacity: 1; }
+
+#objective {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #b0a698;
+  max-width: 340px;
+  line-height: 1.5;
+}
+
+#challenge {
+  position: fixed;
+  left: 50%;
+  bottom: 3.5vh;
+  transform: translateX(-50%);
+  width: min(640px, 94vw);
+  z-index: 25;
+  background: rgba(8, 6, 12, 0.9);
+  border: 1px solid #3a2f26;
+  border-radius: 8px;
+  padding: 16px 22px 18px;
+  text-align: center;
+  display: none;
+  box-shadow: 0 0 50px #000, inset 0 0 30px rgba(138, 15, 29, 0.08);
+}
+#challenge.show { display: block; }
+#c-room {
+  font-variant: small-caps;
+  letter-spacing: 0.1em;
+  color: #9a8f80;
+  font-size: 14px;
+}
+#challenge #speak-btn { width: 80px; height: 80px; font-size: 28px; }
+#challenge #subtitle-top { min-height: 46px; margin-top: 8px; }
+#challenge .fr-line { font-size: 22px; }
+#challenge .fr-line.long { font-size: 17px; }
+#challenge #word-zone { margin: 6px 0 12px; }
+#challenge #answer { font-size: 19px; padding: 10px 14px; }
+#challenge #feedback { min-height: 44px; margin-top: 10px; font-size: 15.5px; }
+
 @media (max-width: 560px) {
   #room-title { font-size: 22px; }
   #answer { font-size: 18px; }

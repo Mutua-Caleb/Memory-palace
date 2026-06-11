@@ -3,20 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Palais de Mémoire — apprends le français… si tu oses</title>
+<title>Le Palais de Mémoire (classique) — apprends le français… si tu oses</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="is3d">
+<body>
 
-  <!-- the voxel world -->
-  <canvas id="gl"></canvas>
+  <div id="scene"></div>
+  <div class="fog f1"></div>
+  <div class="fog f2"></div>
 
-  <canvas id="rain"></canvas>
-  <canvas id="grain"></canvas>
-  <div id="vignette"></div>
-  <div id="blood-vignette"></div>
+  <!-- the creature -->
+  <div id="monster">
+    <svg viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 8 C28 8 22 30 24 48 C25 60 20 64 18 80 L12 200 C12 212 22 218 30 214 L38 150 L44 214 C46 220 54 220 56 214 L62 150 L70 214 C78 218 88 212 88 200 L82 80 C80 64 75 60 76 48 C78 30 72 8 50 8 Z"
+            fill="#000" opacity="0.95"/>
+      <g class="eyes">
+        <ellipse cx="40" cy="34" rx="3.4" ry="2.1" fill="#e8d9b0" opacity="0.9"/>
+        <ellipse cx="60" cy="34" rx="3.4" ry="2.1" fill="#e8d9b0" opacity="0.9"/>
+      </g>
+    </svg>
+  </div>
 
-  <!-- the shadow that darts across your vision -->
+  <!-- the shadow that darts across the room -->
   <div id="shade">
     <svg viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
       <path d="M50 8 C28 8 22 30 24 48 C25 60 20 64 18 80 L12 200 C12 212 22 218 30 214 L38 150 L44 214 C46 220 54 220 56 214 L62 150 L70 214 C78 218 88 212 88 200 L82 80 C80 64 75 60 76 48 C78 30 72 8 50 8 Z"
@@ -24,9 +32,11 @@
     </svg>
   </div>
 
-  <div id="crosshair"></div>
-  <div id="click-hint">Clique pour regarder autour — WASD/ZQSD pour marcher, Espace pour sauter<br>
-    <em>Click to look around — WASD/ZQSD to walk, Space to jump</em></div>
+  <canvas id="rain"></canvas>
+  <div id="flashlight"></div>
+  <canvas id="grain"></canvas>
+  <div id="vignette"></div>
+  <div id="blood-vignette"></div>
 
   <!-- HUD -->
   <header id="hud" style="visibility:hidden">
@@ -37,19 +47,19 @@
     <div id="score-wrap">
       <div id="score">0</div>
       <div id="streak"></div>
-      <div id="objective"></div>
     </div>
   </header>
 
-  <!-- challenge card (appears when you walk into a word-block or the door) -->
-  <main id="challenge">
-    <div id="c-room"></div>
+  <!-- main play area -->
+  <main id="play" style="display:none">
+    <h2 id="room-title"></h2>
+    <p id="room-sub"></p>
 
-    <!-- subtitles: what the voice says, FR + EN (own reserved row) -->
+    <!-- subtitles: what the voice says, in French + English (own reserved row) -->
     <div id="subtitle-top"></div>
 
     <div id="word-zone">
-      <button id="speak-btn" title="Écoute (Listen)" aria-label="Listen">
+      <button id="speak-btn" title="Écoute (Listen)" aria-label="Listen to the word">
         <span id="timer-ring"></span>🕯️
       </button>
       <div class="aux-btns">
@@ -74,17 +84,10 @@
   <div id="start" class="overlay">
     <div class="panel">
       <h1>Le Palais de Mémoire</h1>
-      <p class="tagline">Dix mémoires sanglantes, dix salles à explorer. Marche dans le noir, touche les blocs qui brillent, écris ce que la voix murmure — et la porte s'ouvrira.<br>
-      <em>Ten bloody memories, ten rooms to explore. Walk in the dark, touch the glowing blocks, type what the voice whispers — and the door will open.</em></p>
+      <p class="tagline">Dix mémoires sanglantes derrière dix portes. Entre dans chaque pièce, écoute la voix, tape ce que tu entends — et souviens-toi de tout.<br>
+      <em>Ten bloody memories behind ten doors. Walk into each room, listen to the voice, type what you hear — and remember everything.</em></p>
 
       <div class="opts">
-        <label class="row-label">Contrôles / Controls</label>
-        <p class="voice-note">🖱 Clique pour capturer la souris et regarder autour ·
-          <b>WASD / ZQSD / flèches</b> pour marcher · <b>Maj</b> pour courir ·
-          <b>Espace</b> pour sauter · marche dans un <b>bloc lumineux</b> pour entendre un mot ·
-          <b>Échap</b> pour libérer la souris.
-          <a href="classic.html" style="color:#8a6f4d">Version classique 2D ici</a>.</p>
-
         <label class="row-label">Tu réponds en… / You answer in…</label>
         <div class="choice-row" id="lang-row">
           <button data-v="fr" class="sel">Français (recommandé)</button>
@@ -108,7 +111,7 @@
           <button data-v="nightmare">Cauchemar — 12s, accents exigés</button>
         </div>
 
-        <label class="row-label">La voix du palais</label>
+        <label class="row-label">La voix du manoir</label>
         <select id="voice-select"></select>
         <p class="voice-note" id="voice-note">
           💡 Pour des voix françaises ultra-réalistes (neurales), ouvre ce jeu dans
@@ -127,7 +130,7 @@
     <div class="panel">
       <h2 id="inter-title"></h2>
       <p class="tagline" id="inter-desc"></p>
-      <button id="inter-btn" class="big-btn">Entrer dans la mémoire</button>
+      <button id="inter-btn" class="big-btn">Ouvrir la porte</button>
     </div>
   </div>
 
@@ -135,7 +138,7 @@
   <div id="gameover" class="overlay hidden">
     <div class="panel">
       <h1>Tu es à lui maintenant</h1>
-      <p class="tagline">You belong to it now. The palace keeps what it catches.</p>
+      <p class="tagline">You belong to it now. The manor keeps what it catches.</p>
       <div class="stats" id="go-stats"></div>
       <h2>Les mots qui t'ont perdu — review these</h2>
       <div id="review-list"></div>
@@ -147,8 +150,8 @@
   <div id="victory" class="overlay hidden">
     <div class="panel">
       <h1>L'Aube — Dawn</h1>
-      <p class="tagline">La dernière porte s'ouvre sur le matin. Tu es libre… et tu parles français.<br>
-      <em>The last door opens onto morning. You are free… and you speak French.</em></p>
+      <p class="tagline">La porte finale s'ouvre sur le matin. Tu es libre… et tu parles français.<br>
+      <em>The final door opens onto morning. You are free… and you speak French.</em></p>
       <div class="stats" id="win-stats"></div>
       <div id="win-review-wrap">
         <h2>À réviser — words you missed</h2>
@@ -156,6 +159,20 @@
       </div>
       <button id="again-btn" class="big-btn">Rejouer</button>
     </div>
+  </div>
+
+  <!-- 3D DOOR — you physically walk into each memory -->
+  <div id="door3d" class="hidden">
+    <div class="hall">
+      <div class="door-frame">
+        <div class="door-dark"></div>
+        <div class="door-panel">
+          <div class="plaque" id="door-plaque"></div>
+          <div class="knob"></div>
+        </div>
+      </div>
+    </div>
+    <p class="door-caption">La porte s'ouvre… entre. <em>The door opens… step inside.</em></p>
   </div>
 
   <!-- subliminal face flash -->
@@ -186,10 +203,8 @@
     </svg>
   </div>
 
-  <script src="js/three.min.js"></script>
   <script src="js/vocab.js"></script>
   <script src="js/audio.js"></script>
-  <script src="js/world3d.js"></script>
-  <script src="js/game3d.js"></script>
+  <script src="js/game.js"></script>
 </body>
 </html>

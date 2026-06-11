@@ -15,10 +15,20 @@ body — each one staged as a room of the manor.
 
 ## ▶️ How to play
 
-No build step, no dependencies. Either:
+No build step, no install (Three.js is bundled). Either:
 
 - **Open `index.html` directly** in a browser, or
 - serve the folder: `python3 -m http.server` then visit `http://localhost:8000`
+
+`index.html` is the **Minecraft-style 3D version**: a first-person voxel
+palace. Click to capture the mouse, walk with **WASD / ZQSD / arrows**,
+**Shift** to run, **Space** to jump, **Échap** to release the mouse. Walk
+into a **glowing block** to hear its word; clear them all, then walk to the
+blood-lit **door** for the sentence dictation — pass it and the door slides
+open so you can walk into the next memory (it slams behind you). The Thing
+stands between you and the door, and every mistake lets it creep closer.
+
+Prefer the original cinematic 2D version? It lives at **`classic.html`**.
 
 Then:
 
