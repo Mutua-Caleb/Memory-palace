@@ -49,7 +49,7 @@ function enForms(enList) {
 /* ------------------------------------------------------------------ */
 /*  settings (start screen)                                            */
 /* ------------------------------------------------------------------ */
-const settings = { lang: "fr", diff: "normal" };
+const settings = { lang: "fr", diff: "normal", subs: "on" };
 const DIFF = {
   easy:      { time: 35, accentsRequired: false },
   normal:    { time: 22, accentsRequired: false },
@@ -67,6 +67,7 @@ function wireChoiceRow(rowId, key) {
 }
 wireChoiceRow("lang-row", "lang");
 wireChoiceRow("diff-row", "diff");
+wireChoiceRow("sub-row", "subs");
 
 function fillVoices() {
   const sel = $("voice-select");
@@ -135,6 +136,88 @@ function scheduleStorm() {
   }, 20000 + Math.random() * 35000);
 }
 
+// rain streaks, always falling in front of the scene
+(function rainCanvas() {
+  const cv = $("rain");
+  const c = cv.getContext("2d");
+  function size() { cv.width = innerWidth; cv.height = innerHeight; }
+  size();
+  addEventListener("resize", size);
+  const drops = Array.from({ length: 160 }, () => ({
+    x: Math.random() * innerWidth,
+    y: Math.random() * innerHeight,
+    l: 8 + Math.random() * 18,
+    v: 9 + Math.random() * 9
+  }));
+  (function f() {
+    c.clearRect(0, 0, cv.width, cv.height);
+    c.strokeStyle = "rgba(170, 185, 210, 0.28)";
+    c.lineWidth = 1;
+    drops.forEach(d => {
+      c.beginPath();
+      c.moveTo(d.x, d.y);
+      c.lineTo(d.x - 2, d.y + d.l);
+      c.stroke();
+      d.y += d.v;
+      d.x -= 1.2;
+      if (d.y > cv.height) { d.y = -25; d.x = Math.random() * (cv.width + 120); }
+      if (d.x < -15) d.x = cv.width + 10;
+    });
+    requestAnimationFrame(f);
+  })();
+})();
+
+// blood dripping from the top of the screen, heavier as danger rises
+setInterval(() => {
+  if (!G.running) return;
+  const n = G.danger > 0.5 ? 2 : 1;
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement("div");
+    d.className = "drip";
+    d.style.left = Math.random() * 100 + "vw";
+    d.style.setProperty("--len", (40 + Math.random() * 130) + "px");
+    d.style.animationDuration = (3.5 + Math.random() * 4) + "s";
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 9000);
+  }
+}, 3000);
+
+function bloodSplat() {
+  const v = $("blood-vignette");
+  v.style.transition = "opacity 0.05s";
+  v.style.opacity = "0.95";
+  setTimeout(() => {
+    v.style.transition = "opacity 1.4s";
+    v.style.opacity = (G.danger * 0.55).toFixed(2);
+  }, 130);
+}
+
+// random scare events — the shade darts past, or a face flashes for an instant
+let scareTimer = null;
+function shadeDart() {
+  const s = $("shade");
+  s.style.bottom = (12 + Math.random() * 40) + "vh";
+  HorrorAudio.screech();
+  s.classList.remove("dart");
+  void s.offsetWidth;
+  s.classList.add("dart");
+}
+function faceFlash() {
+  const f = $("face-flash");
+  f.style.display = "flex";
+  HorrorAudio.screech();
+  setTimeout(() => { f.style.display = "none"; }, 90);
+}
+function scheduleScares() {
+  scareTimer = setTimeout(() => {
+    if (G.running) {
+      if (G.danger > 0.7 && Math.random() < 0.45) faceFlash();
+      else if (G.danger > 0.3 || Math.random() < 0.25) shadeDart();
+    }
+    scheduleScares();
+  }, 9000 + Math.random() * 15000);
+}
+
 let whisperTimer = null;
 function scheduleWhispers() {
   whisperTimer = setTimeout(() => {
@@ -174,6 +257,7 @@ function setDanger(d) {
   G.danger = Math.max(0, Math.min(1, d));
   document.documentElement.style.setProperty("--danger", G.danger.toFixed(3));
   document.body.classList.toggle("danger-high", G.danger > 0.65);
+  $("blood-vignette").style.opacity = (G.danger * 0.55).toFixed(2);
   HorrorAudio.setDanger(G.danger);
 }
 
@@ -190,10 +274,18 @@ function renderHUD() {
 /* ------------------------------------------------------------------ */
 /*  word round                                                         */
 /* ------------------------------------------------------------------ */
+function showSubtitle(w) {
+  if (settings.subs !== "on") return;
+  const s = $("subtitle-top");
+  s.innerHTML = `<div class="fr-line">« ${w.fr} »</div><div class="en-line">${w.en[0]}</div>`;
+  s.classList.add("show");
+}
+
 function speakWord(slow = false) {
   if (!G.word) return;
   const btn = $("speak-btn");
   btn.classList.add("speaking");
+  showSubtitle(G.word);
   Voice.speak(G.word.fr, { rate: slow ? 0.55 : 0.92, onend: () => btn.classList.remove("speaking") });
 }
 
@@ -217,6 +309,7 @@ function nextWord() {
   if (!G.queue.length) { roomCleared(); return; }
   G.word = G.queue.shift();
   G.awaiting = true;
+  $("subtitle-top").classList.remove("show");
   $("answer").value = "";
   $("hint-line").textContent = "";
   $("feedback").innerHTML = "";
@@ -304,6 +397,7 @@ function onSubmit() {
     markMissed(w);
     G.streak = 0;
     setDanger(G.danger + 0.22);
+    bloodSplat();
     HorrorAudio.chime(false);
     $("answer").classList.add("shake");
     setTimeout(() => $("answer").classList.remove("shake"), 400);
@@ -334,13 +428,29 @@ function showHint() {
 /* ------------------------------------------------------------------ */
 /*  rooms / lives / endings                                            */
 /* ------------------------------------------------------------------ */
+// You physically walk through the door into the memory:
+// the door creaks open in 3D, footsteps carry you through, it slams behind you.
+function doorSequence(cb) {
+  const d3 = $("door3d");
+  $("door-plaque").textContent = ROOMS[G.roomIdx].fr;
+  d3.classList.remove("open", "walk");
+  d3.classList.remove("hidden");
+  HorrorAudio.doorOpen();
+  setTimeout(() => d3.classList.add("open"), 800);
+  setTimeout(() => { d3.classList.add("walk"); HorrorAudio.footsteps(); }, 2400);
+  setTimeout(() => {
+    d3.classList.add("hidden");
+    HorrorAudio.slam();
+    cb();
+  }, 4100);
+}
+
 function enterRoom() {
   const room = ROOMS[G.roomIdx];
   $("room-title").textContent = room.fr;
   $("room-sub").innerHTML = `${room.desc}<br><em>${room.descEn}</em>`;
   G.queue = shuffle(room.words);
   renderHUD();
-  HorrorAudio.doorOpen();
   const line = rand(VOICE_LINES.enterRoom);
   Voice.speak(line.fr, { volume: 0.85, onend: () => setTimeout(nextWord, 400) });
   // fallback in case speech fails silently
@@ -363,7 +473,7 @@ function roomCleared() {
 }
 $("inter-btn").addEventListener("click", () => {
   $("interlude").classList.add("hidden");
-  enterRoom();
+  doorSequence(enterRoom);
 });
 
 function caught() {
@@ -414,6 +524,7 @@ function endStats() {
 
 function gameOver() {
   G.running = false;
+  $("subtitle-top").classList.remove("show");
   $("play").style.display = "none";
   $("go-stats").innerHTML = endStats();
   buildReview($("review-list"));
@@ -425,6 +536,7 @@ function victory() {
   G.running = false;
   stopTimer();
   document.body.classList.add("dawn");
+  $("subtitle-top").classList.remove("show");
   $("play").style.display = "none";
   $("win-stats").innerHTML = endStats();
   buildReview($("review-list-win"));
@@ -446,8 +558,9 @@ function resetGame() {
   setDanger(0);
   $("hud").style.visibility = "visible";
   $("play").style.display = "block";
+  $("subtitle-top").classList.remove("show");
   renderHUD();
-  enterRoom();
+  doorSequence(enterRoom);
 }
 
 $("start-btn").addEventListener("click", () => {
@@ -456,6 +569,7 @@ $("start-btn").addEventListener("click", () => {
   $("start").classList.add("hidden");
   scheduleStorm();
   scheduleWhispers();
+  scheduleScares();
   resetGame();
 });
 $("retry-btn").addEventListener("click", () => {

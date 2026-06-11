@@ -8,10 +8,10 @@
 const ROOMS = [
   {
     id: "gate",
-    fr: "La Grille du Manoir",
-    en: "The Manor Gate",
-    desc: "Une voix t'accueille dans le noir. Réponds-lui pour entrer…",
-    descEn: "A voice greets you in the dark. Answer it to enter…",
+    fr: "Mémoire I — La Grille sous l'Orage",
+    en: "Memory I — The Gate in the Storm",
+    desc: "Ta première mémoire. Il pleuvait, ce soir-là. Quelqu'un t'a dit bonjour… puis a disparu sous la pluie.",
+    descEn: "Your first memory. It was raining that night. Someone said hello to you… then vanished into the rain.",
     glyph: "gate",
     words: [
       { fr: "bonjour", en: ["hello", "good morning", "good day"], hint: "a greeting, in the morning" },
@@ -28,10 +28,10 @@ const ROOMS = [
   },
   {
     id: "classroom",
-    fr: "La Salle de Classe Abandonnée",
-    en: "The Abandoned Classroom",
-    desc: "Des pupitres vides. Quelque chose a écrit au tableau…",
-    descEn: "Empty desks. Something has written on the board…",
+    fr: "Mémoire II — La Salle de Classe",
+    en: "Memory II — The Classroom",
+    desc: "Du sang sèche sur les pupitres. C'était ta classe, autrefois. Quelque chose a écrit ton nom au tableau.",
+    descEn: "Blood dries on the desks. This was your classroom, once. Something has written your name on the board.",
     glyph: "classroom",
     words: [
       { fr: "le tableau", en: ["board", "blackboard", "whiteboard"], hint: "the teacher writes on it" },
@@ -50,10 +50,10 @@ const ROOMS = [
   },
   {
     id: "corridor",
-    fr: "Le Couloir Sans Fin",
-    en: "The Endless Corridor",
-    desc: "Où est la sortie ? Devant ? Derrière ? Les murs murmurent…",
-    descEn: "Where is the exit? In front? Behind? The walls whisper…",
+    fr: "Mémoire III — Le Couloir",
+    en: "Memory III — The Corridor",
+    desc: "Tu courais dans ce couloir, cette nuit-là. Quelque chose courait derrière toi. Il y a des traces rouges sur le sol.",
+    descEn: "You ran down this corridor that night. Something ran behind you. There are red footprints on the floor.",
     glyph: "corridor",
     words: [
       { fr: "devant", en: ["in front of", "in front"], hint: "the opposite of behind" },
@@ -70,10 +70,10 @@ const ROOMS = [
   },
   {
     id: "kitchen",
-    fr: "La Cuisine Froide",
-    en: "The Cold Kitchen",
-    desc: "La table est mise pour un dîner que personne n'a mangé…",
-    descEn: "The table is set for a dinner no one ever ate…",
+    fr: "Mémoire IV — La Cuisine",
+    en: "Memory IV — The Kitchen",
+    desc: "Le dîner est encore sur la table, froid depuis des années. Le sang aussi.",
+    descEn: "Dinner is still on the table, cold for years. So is the blood.",
     glyph: "kitchen",
     words: [
       { fr: "une assiette", en: ["plate"], hint: "you eat from it" },
@@ -90,10 +90,10 @@ const ROOMS = [
   },
   {
     id: "bedroom",
-    fr: "La Chambre du Maître",
-    en: "The Master's Bedroom",
-    desc: "Le lit est défait. Quelqu'un vient de se lever…",
-    descEn: "The bed is unmade. Someone has just gotten up…",
+    fr: "Mémoire V — La Chambre",
+    en: "Memory V — The Bedroom",
+    desc: "Tu t'es réveillé ici, cette nuit-là. Le lit est encore chaud. La pluie frappe la fenêtre.",
+    descEn: "You woke up here that night. The bed is still warm. Rain beats against the window.",
     glyph: "bedroom",
     words: [
       { fr: "se réveiller", en: ["to wake up", "wake up"], hint: "to open your eyes in the morning" },
@@ -110,10 +110,10 @@ const ROOMS = [
   },
   {
     id: "clock",
-    fr: "La Tour de l'Horloge",
-    en: "The Clock Tower",
-    desc: "L'horloge sonne sans cesse. Quel jour sommes-nous ? Quelle heure est-il ?",
-    descEn: "The clock keeps striking. What day is it? What time is it?",
+    fr: "Mémoire VI — La Tour de l'Horloge",
+    en: "Memory VI — The Clock Tower",
+    desc: "L'horloge sonne encore le jour où tout s'est arrêté. Minuit. Toujours minuit.",
+    descEn: "The clock still strikes the day everything stopped. Midnight. Always midnight.",
     glyph: "clock",
     words: [
       { fr: "lundi", en: ["monday"], hint: "the first day of the school week" },
@@ -130,10 +130,10 @@ const ROOMS = [
   },
   {
     id: "gallery",
-    fr: "La Galerie des Portraits",
-    en: "The Portrait Gallery",
-    desc: "Les yeux des tableaux te suivent. C'est une famille… ta famille ?",
-    descEn: "The portraits' eyes follow you. A family… your family?",
+    fr: "Mémoire VII — La Galerie des Portraits",
+    en: "Memory VII — The Portrait Gallery",
+    desc: "Ta famille te regarde depuis les cadres. Leurs yeux te suivent. Leurs yeux pleurent du sang.",
+    descEn: "Your family watches you from the frames. Their eyes follow you. Their eyes weep blood.",
     glyph: "gallery",
     words: [
       { fr: "la famille", en: ["family"], hint: "all of them together" },
@@ -150,10 +150,10 @@ const ROOMS = [
   },
   {
     id: "menagerie",
-    fr: "La Ménagerie",
-    en: "The Menagerie",
-    desc: "Les cages sont ouvertes. Tu entends des griffes sur le sol…",
-    descEn: "The cages are open. You hear claws on the floor…",
+    fr: "Mémoire VIII — La Ménagerie",
+    en: "Memory VIII — The Menagerie",
+    desc: "Les cages sont ouvertes et vides. Les animaux se souviennent de toi. Tu entends des griffes dans le noir.",
+    descEn: "The cages are open and empty. The animals remember you. You hear claws in the dark.",
     glyph: "menagerie",
     words: [
       { fr: "le chien", en: ["dog"], hint: "it barks… or it used to" },
@@ -170,10 +170,10 @@ const ROOMS = [
   },
   {
     id: "cellar",
-    fr: "La Cave et l'Orage",
-    en: "The Cellar and the Storm",
-    desc: "Dehors, l'orage gronde. Ici, il fait si froid…",
-    descEn: "Outside, the storm growls. In here, it is so cold…",
+    fr: "Mémoire IX — La Cave",
+    en: "Memory IX — The Cellar",
+    desc: "La pluie coule entre les pierres, rouge. L'orage n'a jamais cessé ici.",
+    descEn: "Rain seeps between the stones, red. The storm never stopped down here.",
     glyph: "cellar",
     words: [
       { fr: "l'hiver", en: ["winter"], hint: "the coldest season" },
@@ -190,10 +190,10 @@ const ROOMS = [
   },
   {
     id: "door",
-    fr: "La Porte Finale",
-    en: "The Final Door",
-    desc: "La Chose est là, tout près. Nomme-la, partie par partie, et la porte s'ouvrira…",
-    descEn: "The Thing is here, so close. Name it, part by part, and the door will open…",
+    fr: "Mémoire X — La Dernière Mémoire",
+    en: "Memory X — The Last Memory",
+    desc: "C'est ici que tu l'as vu pour la première fois. Nomme-le, partie par partie, et souviens-toi de tout.",
+    descEn: "This is where you saw it for the first time. Name it, part by part, and remember everything.",
     glyph: "door",
     words: [
       { fr: "la tête", en: ["head"], hint: "it turns towards you" },

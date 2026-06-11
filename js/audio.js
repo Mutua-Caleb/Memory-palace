@@ -10,7 +10,7 @@
 /* ------------------------------------------------------------------ */
 const HorrorAudio = (() => {
   let ctx = null;
-  let master, windGain, droneGain, heartGain;
+  let master, windGain, droneGain, heartGain, rainGain;
   let started = false;
   let heartTimer = null;
   let creakTimer = null;
@@ -33,6 +33,36 @@ const HorrorAudio = (() => {
       data[i] = last * 3.5;
     }
     return buf;
+  }
+
+  function makeWhiteBuffer(seconds = 2) {
+    const buf = ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return buf;
+  }
+
+  function startRain() {
+    // endless rain: filtered white noise, gain swelling in slow waves
+    const n = ctx.createBufferSource();
+    n.buffer = makeWhiteBuffer(3);
+    n.loop = true;
+    const hp = ctx.createBiquadFilter();
+    hp.type = "highpass";
+    hp.frequency.value = 1400;
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 7500;
+    rainGain = ctx.createGain();
+    rainGain.gain.value = 0.05;
+    const lfo = ctx.createOscillator();
+    lfo.frequency.value = 0.05;
+    const lg = ctx.createGain();
+    lg.gain.value = 0.018;
+    lfo.connect(lg).connect(rainGain.gain);
+    n.connect(hp).connect(lp).connect(rainGain).connect(master);
+    n.start();
+    lfo.start();
   }
 
   function startWind() {
@@ -177,6 +207,75 @@ const HorrorAudio = (() => {
     o.stop(ctx.currentTime + 2);
   }
 
+  function footsteps() {
+    // slow footsteps on wooden boards — walking into the memory
+    if (!started) return;
+    for (let i = 0; i < 4; i++) {
+      const t = ctx.currentTime + i * 0.42;
+      const o = ctx.createOscillator();
+      o.type = "sine";
+      o.frequency.setValueAtTime(75, t);
+      o.frequency.exponentialRampToValueAtTime(40, t + 0.1);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.18, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      o.connect(g).connect(master);
+      o.start(t);
+      o.stop(t + 0.25);
+    }
+  }
+
+  function slam() {
+    // heavy door slamming shut behind you
+    if (!started) return;
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator();
+    o.type = "sine";
+    o.frequency.setValueAtTime(65, t);
+    o.frequency.exponentialRampToValueAtTime(24, t + 0.3);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.5, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+    o.connect(g).connect(master);
+    o.start(t);
+    o.stop(t + 0.7);
+    const n = ctx.createBufferSource();
+    n.buffer = makeNoiseBuffer(1);
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 250;
+    const g2 = ctx.createGain();
+    g2.gain.setValueAtTime(0.0001, t);
+    g2.gain.exponentialRampToValueAtTime(0.4, t + 0.015);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+    n.connect(lp).connect(g2).connect(master);
+    n.start(t);
+    n.stop(t + 0.5);
+  }
+
+  function screech() {
+    // short violin-like screech — something just moved
+    if (!started) return;
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator();
+    o.type = "sawtooth";
+    o.frequency.setValueAtTime(1700, t);
+    o.frequency.exponentialRampToValueAtTime(2900, t + 0.45);
+    const bp = ctx.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.frequency.value = 2300;
+    bp.Q.value = 7;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.09, t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+    o.connect(bp).connect(g).connect(master);
+    o.start(t);
+    o.stop(t + 0.6);
+  }
+
   function chime(good) {
     if (!started) return;
     const t = ctx.currentTime;
@@ -243,6 +342,7 @@ const HorrorAudio = (() => {
     heartGain.connect(master);
     startWind();
     startDrone();
+    startRain();
     started = true;
     heartbeatLoop();
     scheduleCreaks();
@@ -253,6 +353,7 @@ const HorrorAudio = (() => {
     if (started && droneGain) {
       droneGain.gain.setTargetAtTime(0.045 + danger * 0.06, ctx.currentTime, 0.5);
       windGain.gain.setTargetAtTime(0.12 + danger * 0.10, ctx.currentTime, 0.5);
+      if (rainGain) rainGain.gain.setTargetAtTime(0.05 + danger * 0.05, ctx.currentTime, 0.5);
     }
   }
 
@@ -264,6 +365,7 @@ const HorrorAudio = (() => {
   }
 
   return { start, stop, setDanger, thunder, doorOpen, chime, jumpscare,
+    footsteps, slam, screech,
     get started() { return started; } };
 })();
 

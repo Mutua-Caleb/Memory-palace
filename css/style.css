@@ -255,10 +255,10 @@ body.danger-high #monster { animation: twitch 0.7s infinite steps(2); }
 #feedback .bad { color: #c8505e; }
 #feedback .accent-note { color: #c98f2d; font-size: 14px; display: block; }
 
-/* whisper subtitles */
+/* whisper subtitles — pinned near the top, under the word subtitles */
 #whisper-line {
   position: fixed;
-  bottom: 7vh;
+  top: 150px;
   left: 0; right: 0;
   z-index: 22;
   text-align: center;
@@ -401,6 +401,180 @@ body.dawn #scene {
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-thumb { background: #2c241d; }
+
+/* ============ word subtitles (top of screen) ============ */
+#subtitle-top {
+  position: fixed;
+  top: 64px;
+  left: 0; right: 0;
+  z-index: 22;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+#subtitle-top.show { opacity: 1; }
+#subtitle-top .fr-line {
+  font-size: 28px;
+  color: var(--bone);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 16px rgba(138, 15, 29, 0.85), 0 2px 4px #000;
+}
+#subtitle-top .en-line {
+  font-size: 16px;
+  font-style: italic;
+  color: #b59090;
+  margin-top: 3px;
+  text-shadow: 0 1px 4px #000;
+}
+
+/* ============ rain ============ */
+#rain {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* ============ blood ============ */
+#blood-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 38%, rgba(110, 0, 12, 0.6) 100%),
+    linear-gradient(rgba(90, 0, 10, 0.35), transparent 12%);
+  opacity: 0;
+  transition: opacity 1.2s;
+}
+.drip {
+  position: fixed;
+  top: 0;
+  width: 3px;
+  z-index: 9;
+  pointer-events: none;
+  background: linear-gradient(#3a020a, #8a0f1d 70%, #b51527);
+  border-radius: 0 0 3px 3px;
+  filter: drop-shadow(0 0 3px rgba(90, 0, 10, 0.8));
+  animation: dripfall linear forwards;
+}
+@keyframes dripfall {
+  0%   { height: 0; opacity: 0.95; transform: translateY(0); }
+  60%  { height: var(--len); opacity: 0.9; transform: translateY(0); }
+  100% { height: var(--len); opacity: 0; transform: translateY(35vh); }
+}
+
+/* ============ the darting shade ============ */
+#shade {
+  position: fixed;
+  bottom: 20vh;
+  left: -15vw;
+  z-index: 4;
+  width: 95px;
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(3px);
+}
+#shade.dart { animation: dart 0.85s ease-in forwards; }
+@keyframes dart {
+  0%   { transform: translateX(0) skewX(-6deg); opacity: 0; }
+  15%  { opacity: 0.85; }
+  100% { transform: translateX(135vw) skewX(-12deg); opacity: 0; }
+}
+
+/* ============ subliminal face flash ============ */
+#face-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+#face-flash svg { width: min(60vh, 80vw); opacity: 0.3; }
+
+/* ============ 3D door — walking into a memory ============ */
+#door3d {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: radial-gradient(ellipse at 50% 60%, #0b0810 0%, #020203 75%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  perspective: 700px;
+}
+#door3d.hidden { display: none; }
+#door3d .hall {
+  transform-style: preserve-3d;
+  transition: transform 1.7s cubic-bezier(0.5, 0, 0.9, 0.4), opacity 1.6s ease-in;
+}
+#door3d .door-frame {
+  width: 250px;
+  height: 430px;
+  border: 16px solid #221710;
+  border-bottom: none;
+  position: relative;
+  transform-style: preserve-3d;
+  box-shadow: 0 0 80px #000, 0 0 35px rgba(138, 15, 29, 0.25);
+  background: #000;
+}
+#door3d .door-dark {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 45%, #200409 0%, #000 80%);
+}
+#door3d .door-panel {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.25) 0 6px, transparent 6px 38px),
+    linear-gradient(#2c2014, #150e08);
+  border: 1px solid #0a0705;
+  transform-origin: left;
+  transition: transform 2s cubic-bezier(0.65, 0.05, 0.35, 1);
+  display: flex;
+  justify-content: center;
+  backface-visibility: hidden;
+}
+#door3d .knob {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #9a8053, #3a2c18);
+}
+#door3d .plaque {
+  margin-top: 70px;
+  padding: 9px 16px;
+  max-width: 210px;
+  border: 1px solid #4a2a26;
+  background: #100a08;
+  color: #b51527;
+  font-variant: small-caps;
+  letter-spacing: 0.1em;
+  font-size: 15px;
+  text-align: center;
+  text-shadow: 0 0 8px rgba(181, 21, 39, 0.7);
+}
+#door3d .door-caption {
+  margin-top: 34px;
+  font-style: italic;
+  color: #8d8478;
+  font-size: 15px;
+  text-align: center;
+  transition: opacity 0.8s;
+}
+#door3d.open .door-panel { transform: rotateY(-108deg); }
+#door3d.open .door-caption { opacity: 0; }
+#door3d.walk .hall { transform: scale(10) translateY(7%); opacity: 0; }
 
 @media (max-width: 560px) {
   #room-title { font-size: 22px; }

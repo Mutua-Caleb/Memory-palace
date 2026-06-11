@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Manoir — apprends le français… si tu oses</title>
+<title>Le Palais de Mémoire — apprends le français… si tu oses</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -24,9 +24,22 @@
     </svg>
   </div>
 
+  <!-- the shadow that darts across the room -->
+  <div id="shade">
+    <svg viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 8 C28 8 22 30 24 48 C25 60 20 64 18 80 L12 200 C12 212 22 218 30 214 L38 150 L44 214 C46 220 54 220 56 214 L62 150 L70 214 C78 218 88 212 88 200 L82 80 C80 64 75 60 76 48 C78 30 72 8 50 8 Z"
+            fill="#000" opacity="0.9"/>
+    </svg>
+  </div>
+
+  <canvas id="rain"></canvas>
   <div id="flashlight"></div>
   <canvas id="grain"></canvas>
   <div id="vignette"></div>
+  <div id="blood-vignette"></div>
+
+  <!-- subtitles: what the voice says, in French + English -->
+  <div id="subtitle-top"></div>
 
   <!-- HUD -->
   <header id="hud" style="visibility:hidden">
@@ -70,9 +83,9 @@
   <!-- START SCREEN -->
   <div id="start" class="overlay">
     <div class="panel">
-      <h1>Le Manoir</h1>
-      <p class="tagline">Dix portes. Une voix dans le noir. Tape ce que tu entends — ou reste ici pour toujours.<br>
-      <em>Ten doors. A voice in the dark. Type what you hear — or stay here forever.</em></p>
+      <h1>Le Palais de Mémoire</h1>
+      <p class="tagline">Dix mémoires sanglantes derrière dix portes. Entre dans chaque pièce, écoute la voix, tape ce que tu entends — et souviens-toi de tout.<br>
+      <em>Ten bloody memories behind ten doors. Walk into each room, listen to the voice, type what you hear — and remember everything.</em></p>
 
       <div class="opts">
         <label class="row-label">Tu réponds en… / You answer in…</label>
@@ -80,6 +93,12 @@
           <button data-v="fr" class="sel">Français (recommandé)</button>
           <button data-v="both">Français ou English</button>
           <button data-v="en">English</button>
+        </div>
+
+        <label class="row-label">Sous-titres / Subtitles</label>
+        <div class="choice-row" id="sub-row">
+          <button data-v="on" class="sel">Visibles — FR + EN en haut</button>
+          <button data-v="off">Cachés — hardcore</button>
         </div>
 
         <label class="row-label">Difficulté</label>
@@ -99,7 +118,7 @@
         </p>
       </div>
 
-      <button id="start-btn" class="big-btn">Entrer dans le manoir</button>
+      <button id="start-btn" class="big-btn">Entrer dans le palais</button>
     </div>
   </div>
 
@@ -137,6 +156,32 @@
       </div>
       <button id="again-btn" class="big-btn">Rejouer</button>
     </div>
+  </div>
+
+  <!-- 3D DOOR — you physically walk into each memory -->
+  <div id="door3d" class="hidden">
+    <div class="hall">
+      <div class="door-frame">
+        <div class="door-dark"></div>
+        <div class="door-panel">
+          <div class="plaque" id="door-plaque"></div>
+          <div class="knob"></div>
+        </div>
+      </div>
+    </div>
+    <p class="door-caption">La porte s'ouvre… entre. <em>The door opens… step inside.</em></p>
+  </div>
+
+  <!-- subliminal face flash -->
+  <div id="face-flash">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="105" rx="72" ry="92" fill="#0d0a0c"/>
+      <ellipse cx="70" cy="80" rx="17" ry="23" fill="#000"/>
+      <ellipse cx="130" cy="80" rx="17" ry="23" fill="#000"/>
+      <circle cx="70" cy="84" r="5" fill="#e8d9b0"/>
+      <circle cx="130" cy="84" r="5" fill="#e8d9b0"/>
+      <path d="M60 150 Q100 195 140 150 Q100 168 60 150 Z" fill="#000"/>
+    </svg>
   </div>
 
   <!-- JUMPSCARE -->

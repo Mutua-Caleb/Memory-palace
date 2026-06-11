@@ -1,8 +1,12 @@
-# 🕯️ Le Manoir — a horror game that teaches you French
+# 🕯️ Le Palais de Mémoire — a horror game that teaches you French
 
-Ten doors. A voice in the dark speaks a French word. **Type what you hear — in
-French or in English — to move to the next place.** Get it wrong or hesitate
-too long, and The Thing at the end of the corridor takes one step closer.
+Ten doors in a memory palace. Behind each one: a bloody, rain-soaked memory of
+the past. **You physically walk through each door** — it creaks open in 3D,
+your footsteps carry you in, and it slams shut behind you. Inside, a voice in
+the dark speaks a French word; **type what you hear — in French or in
+English — to move on.** The spoken French and its English translation appear
+as subtitles at the top of the screen. Get it wrong or hesitate too long, and
+The Thing in the memory takes one step closer.
 
 The vocabulary follows a beginner French textbook chapter by chapter:
 greetings, the classroom, prepositions, the kitchen table, the daily routine,
@@ -51,8 +55,10 @@ rises. No robotic samples, no audio files.
 
 ## 🧠 Why it teaches well
 
-- **Listening first**: you never see the word before you answer — pure
-  audio comprehension, like the textbook's listening exercises.
+- **Subtitles on top**: by default the spoken French and its English meaning
+  are shown at the top of the screen, so you read, hear, and type at the same
+  time — three memory channels at once. Turn them off ("Cachés — hardcore")
+  for pure listening practice later.
 - **Typing in French is rewarded** (10 pts + streak bonus) but English is
   accepted (5 pts), so you can ramp up gradually.
 - **Accent feedback**: outside Nightmare mode, `fenetre` is accepted for
